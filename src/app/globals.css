@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0f0f14;
+  --foreground: #e0e0e0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 幻灯片背景渲染 */
+.slide-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.slide-bg.image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+video.slide-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* 播放器中的文字块（不可编辑）；文字换行/行高由 blockStyle 内联提供，这里只留定位与穿透 */
+.player-block {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 全屏模式 */
+:fullscreen {
+  background: #000;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a24;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a4a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a5a;
+}
+
+/* 编辑器底部背景条的横滚：全局那套滚动条在 #0a0a12 底上几乎看不见，只在这条里加对比 */
+.bg-strip-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #8b93a7 rgba(255, 255, 255, 0.08);
+}
+
+.bg-strip-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.bg-strip-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+}
+
+.bg-strip-scroll::-webkit-scrollbar-thumb {
+  background: #8b93a7;
+  border-radius: 5px;
+}
+
+.bg-strip-scroll::-webkit-scrollbar-thumb:hover {
+  background: #b6bccb;
+}

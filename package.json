@@ -1,0 +1,41 @@
+{
+  "name": "ppt-player",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"tests/*.test.mjs\"",
+    "db:push": "node --env-file=.env.local scripts/db-push.mjs",
+    "media:setup": "node --env-file=.env.local scripts/storage-setup.mjs",
+    "admin:set": "node --env-file=.env.local scripts/set-admin.mjs"
+  },
+  "dependencies": {
+    "@types/pg": "^8.23.1",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "jszip": "^3.10.2",
+    "next": "16.4.0",
+    "pg": "^8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/turbopack": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "postcss": "^8.5.30",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
