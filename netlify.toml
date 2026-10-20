@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Next.js 缓存目录（Netlify 会自动缓存，加速后续构建）
+[[plugins]]
+  package = "@netlify/cache-nextjs"
