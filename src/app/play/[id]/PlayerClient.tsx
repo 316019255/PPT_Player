@@ -11,6 +11,8 @@ import SheetOverlay from '@/components/SheetOverlay';
 import { useCompactEditor } from '@/components/useCompactEditor';
 import { swipeSide } from '@/lib/play-gesture';
 import { preloadSlideMedia } from '@/lib/preload-media';
+import { nextVideoSourceUrl, videoSourceId } from '@/lib/slide-background';
+import { warmVideo } from '@/lib/video-warm';
 
 interface Props {
   presentationId: number;
@@ -39,6 +41,9 @@ const NO_FULLSCREEN: Notice = {
   tone: 'warn',
   text: '此浏览器不支持整屏放映，已用窗口放映；点屏幕左右或左右滑动就能翻页。',
 };
+
+/** 在本页停留多久才去热下一条视频片源（见放映页里的预热 effect） */
+const WARM_DELAY_MS = 2000;
 
 /** 手机端抽屉里的遥控器说明；桌面端还是那一发 alert，不动 */
 const REMOTE_HELP: [string, string][] = [
@@ -289,6 +294,16 @@ export default function PlayerClient({
       const neighbor = slides[index];
       if (neighbor) preloadSlideMedia(neighbor);
     }
+  }, [current, slides]);
+
+  // 背景视频只提前热「下一条不同的片源」：同一条视频连铺几页是常态，那种页之间不用预热。
+  // 延时是因为这一页自己正在起播、正在抢带宽；用户在这一页停留不足这么久就翻页，
+  // 说明他翻得比下载快，那也不必替一个还没到的页花钱。
+  useEffect(() => {
+    const url = nextVideoSourceUrl(slides, current, videoSourceId(slides[current]?.background));
+    if (!url) return;
+    const t = window.setTimeout(() => warmVideo(url), WARM_DELAY_MS);
+    return () => window.clearTimeout(t);
   }, [current, slides]);
 
   const slide = slides[current];

@@ -2,7 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  BG_LAYER_BELOW,
+  BG_LAYER_TOP,
   DEFAULT_BLOCK_HEIGHT,
+  MIN_CONTENT_LAYER,
   MIN_HEIGHT,
   MIN_WIDTH,
   STAGE_MAX,
@@ -100,4 +103,10 @@ test('导入进来的超宽块（历史脏数据）也不会被钳出 NaN', () =
   assert.ok(Number.isFinite(g.x) && Number.isFinite(g.width));
   // 上限（100-宽）是负数时 min 胜出：块被按在舞台左边，只会更可移到范围内
   assert.deepEqual(g, { x: 0, y: 10, width: 120, height: 80 });
+});
+
+test('幻灯片背景两档都压在最低内容层号底下，且互不相同', () => {
+  // 背景抬到 MIN_CONTENT_LAYER 就会把默认层号的正文整个糊住（视频无缝循环踩过）
+  assert.ok(BG_LAYER_TOP < MIN_CONTENT_LAYER);
+  assert.ok(BG_LAYER_BELOW < BG_LAYER_TOP, '两层同序就分不出谁盖住谁，淡入会失效');
 });

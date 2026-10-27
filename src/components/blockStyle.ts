@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { ImageBlock, TextBlock, VideoBlock } from '@/types/ppt';
 import { hexWithAlpha } from '@/lib/color';
-import { DEFAULT_BLOCK_HEIGHT } from '@/lib/block-geometry';
+import { DEFAULT_BLOCK_HEIGHT, MIN_CONTENT_LAYER } from '@/lib/block-geometry';
 
 /**
  * 文字块样式的唯一来源：编辑器（可拖拽/选中）与只读渲染（放映 + 缩略图）都走这里，
@@ -30,7 +30,7 @@ export function blockStyle(block: TextBlock, opts: BlockStyleOptions = {}): CSSP
     fontWeight: block.fontWeight,
     fontStyle: block.fontStyle,
     textAlign: block.textAlign,
-    zIndex: block.zIndex ?? 1,
+    zIndex: block.zIndex ?? MIN_CONTENT_LAYER,
     boxSizing: 'border-box',
     background: block.bgColor ? hexWithAlpha(block.bgColor, block.bgOpacity ?? 1) : 'transparent',
     borderRadius: `${block.borderRadius ?? 0}px`,
@@ -69,7 +69,7 @@ function mediaBlockStyle(
     top: `${block.y}%`,
     width: `${block.width}%`,
     height: `${block.height}%`,
-    zIndex: block.zIndex ?? 1,
+    zIndex: block.zIndex ?? MIN_CONTENT_LAYER,
     boxSizing: 'border-box',
     overflow: 'hidden',
   };

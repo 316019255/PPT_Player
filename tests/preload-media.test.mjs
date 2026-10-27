@@ -102,3 +102,15 @@ test('站内绝对路径也预热；公开读前缀没配好时云端一块都�
   preloadSlideMedia(slide({ type: 'none', value: '' }, [img('cloud', 'u7/333333333333333333333333333333333333333333333333333333333333333d.png')]));
   assert.deepEqual(asked, [], '非 https 的前缀同样不算配好');
 });
+
+test('云端视频背景不归这里：用 <img> 拉一支视频只会得到一个解不开的图片', () => {
+  process.env.NEXT_PUBLIC_MEDIA_PUBLIC_BASE = BASE;
+  asked.length = 0;
+  const videoPath = `u7/444444444444444444444444444444444444444444444444444444444444444e.mp4`;
+  preloadSlideMedia(slide({ type: 'cloud', value: videoPath }));
+  assert.deepEqual(asked, [], '视频片源由 video-warm 按身份去热，这里抢着发请求等于同一支拉两遍');
+
+  asked.length = 0;
+  preloadSlideMedia(slide({ type: 'video', value: remote('bg.mp4') }));
+  assert.deepEqual(asked, [], '外链视频背景同理');
+});

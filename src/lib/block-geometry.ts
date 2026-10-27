@@ -7,6 +7,14 @@
 
 export type HandlePos = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
 
+/**
+ * 层号分界：内容块从 1 起算（编辑器的 ↑/↓一层 钳在 1~999），幻灯片背景只准用 0 和 -1。
+ * 背景抬到 1 就会把默认层号的正文整个糊住；无缝循环的视频背景要两层叠出淡入，所以留了上下两档。
+ */
+export const MIN_CONTENT_LAYER = 1;
+export const BG_LAYER_TOP = 0;
+export const BG_LAYER_BELOW = -1;
+
 /** 拖拽只认这四个数：文字块和图片块共用同一条几何 */
 export interface BlockGeometry {
   x: number;
