@@ -129,6 +129,18 @@ npm run build && npm start
    第一个管理员账号用 `npm run admin:set <email> <password> [名称] [--reset]` 建（已存在的邮箱要 `--reset`
    才动密码，且它不会顺手改掉原名称）—— 注册页卡「密码至少 8 位」，短密码或临时测试号只能走这条。
    「现读」指的是不用改代码，但 env 只在进程启动时读进来：改完 `.env.local` 或部署平台的变量要重启才生效。
+9. **保活：`.github/workflows/keep-alive.yml` 每两天打一次 `GET /api/health`**。
+   Supabase 免费项目连续 7 天低活跃会被暂停 —— 暂停后要人到控制台 Resume（数据最多保留一年），
+   期间整站都不可用，**连图片/视频背景的素材桶也是同一个项目在服务**，所以只把数据库挪走并不能免掉这一劫。
+   - 这条路由靠 `export const dynamic = 'force-dynamic'` 才成立：GET 处理器默认会被预渲染成静态文件，
+     那样每两天打的都是构建时缓存的响应，一条 SQL 都不碰，Supabase 那边看着正常、实际照样休眠。
+     `tests/keep-alive.test.mjs` 把这类退化钉成门禁（还包括「定时最坏间隔 ≤ 4 天」，留出被跳过的余量）。
+   - 定时任务自己不写库、也不替匿名访客建档（走 `getCurrentUserOrGuest` 那类 helper 每两天就会攒一行孤儿游客）。
+   - 已知的失效点：公共仓库「60 天内没有仓库活动」时 GitHub 会**自动禁用定时工作流**，而 cron 自己跑并不算活动。
+     症状很迷惑：手动 Run workflow 一切正常，定时就是不响。恢复：随便一次提交，或到 Actions 页面点 Enable workflow。
+   - 验收口径：Actions 里这个工作流的运行记录，每次应是 `PASS：HTTP 200 {"ok":true}`；
+     `503` = 数据库连不上（先看项目是不是已经暂停了），`404` = 线上版本还没有这条路由，需要重新部署。
+   - 它只解决「不休眠」，不解决备份：免费档仍然没有自动备份，要紧的稿子自己定期 `pg_dump`。
 
 ## 配额与硬限制
 

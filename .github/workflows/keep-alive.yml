@@ -1,0 +1,40 @@
+name: keep-alive
+
+# Supabase 免费项目连续 7 天低活跃会被暂停；暂停后要在控制台手动 Resume，
+# 期间整站不可用 —— 连素材桶（图片/视频背景）都是同一个项目在服务。
+# 这里每两天打一次自家的 /api/health，那条路由会真跑一条 SQL，算作项目活动。
+#
+# 已知失效点（GitHub 官方规则）：公共仓库「60 天内没有仓库活动」会自动禁用定时工作流，
+# 而 cron 自己跑起来并不算仓库活动。症状很迷惑：手动 Run workflow 一切正常，定时就是不响。
+# 恢复办法：随便一次提交，或到 Actions 页面点 Enable workflow。
+# 最大间隔由 tests/keep-alive.test.mjs 盯住，改成一周以上会让这条保活失去意义。
+
+on:
+  schedule:
+    - cron: '37 9 */2 * *'
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      URL: https://ppt02.netlify.app/api/health
+    steps:
+      - name: 打一次会真跑 SQL 的请求
+        run: |
+          set -u
+          out="$RUNNER_TEMP/health.json"
+          for i in 1 2 3; do
+            code=$(curl -sS -o "$out" -w '%{http_code}' --max-time 60 "$URL" || echo 000)
+            if [ "$code" = "200" ] && grep -q '"ok":true' "$out"; then
+              echo "PASS：HTTP $code $(cat "$out")"
+              exit 0
+            fi
+            echo "第 $i 次：HTTP $code，响应 $(cat "$out" 2>/dev/null || echo '<空>')"
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          echo "::error::保活失败（最后一次 HTTP $code）。503 = 数据库连不上，去 Supabase 控制台看项目是不是被暂停了（Resume project）；404 = 线上版本还没有 /api/health，需要重新部署。"
+          exit 1
